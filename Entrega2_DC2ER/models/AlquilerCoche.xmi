@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dc_uml:Diagrama xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dc_uml="http://DSM/DC_UML"
+    nombre="AlquilerCoche">
+
+  <!-- Clases simples -->
+  <clases nombre="Vehiculo">
+    <atributos nombre="matricula" tipo="cadena" min="0" max="1"/>
+    <atributos nombre="marca"     tipo="cadena" min="0" max="1"/>
+    <atributos nombre="modelo"    tipo="cadena" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="Moto" generaliza="//@clases.0">
+    <atributos nombre="cilindrada" tipo="cadena" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="Coche" generaliza="//@clases.0">
+    <atributos nombre="numPuertas" tipo="entero" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="CocheGasolina" generaliza="//@clases.2">
+    <atributos nombre="capacidadDeposito" tipo="real" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="CocheElectrico" generaliza="//@clases.2">
+    <atributos nombre="autonomiaKm" tipo="real" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="Persona">
+    <atributos nombre="dni"    tipo="cadena" min="1" max="1"/>
+    <atributos nombre="nombre" tipo="cadena" min="0" max="1"/>
+  </clases>
+
+  <clases nombre="Aseguradora">
+    <atributos nombre="cif" tipo="cadena" min="1" max="1"/>
+  </clases>
+
+  <!-- ClaseAsociacion: Contrato (índice 7 en clases) -->
+  <clases xsi:type="dc_uml:ClaseAsociacion"
+      nombre="Contrato"
+      asociacion="//@relaciones.1">
+    <atributos nombre="fechaInicio"  tipo="fecha" min="1" max="1"/>
+    <atributos nombre="fechaFin"     tipo="fecha" min="1" max="1"/>
+    <atributos nombre="precioTotal"  tipo="real"  min="1" max="1"/>
+  </clases>
+
+  <!-- Relacion 0: asegura — Aseguradora(1..1) → Vehiculo(0..*) -->
+  <relaciones nombre="asegura">
+    <finRelacion rol="aseguradora" min="1" max="1"  composicion="false" clase="//@clases.6"/>
+    <finRelacion rol="vehiculos"   min="0" max="-1" composicion="false" clase="//@clases.0"/>
+  </relaciones>
+
+  <!-- Relacion 1: alquila — Persona(*) ↔ Vehiculo(*), con ClaseAsociacion Contrato -->
+  <relaciones nombre="alquila" claseasociacion="//@clases.7">
+    <finRelacion rol="personas"  min="1" max="-1" composicion="false" clase="//@clases.5"/>
+    <finRelacion rol="vehiculos" min="1" max="-1" composicion="false" clase="//@clases.0"/>
+  </relaciones>
+
+</dc_uml:Diagrama>

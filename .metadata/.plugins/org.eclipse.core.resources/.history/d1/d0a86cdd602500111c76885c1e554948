@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metamodeloDC:DiagramaClases
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:metamodeloDC="http://www.example.org/metamodeloDC"
+    xsi:schemaLocation="http://www.example.org/metamodeloDC metamodeloDC.ecore">
+  <clases nombre="Vehiculo">
+    <atributos
+        nombre="matricula"
+        tipo="String"/>
+    <atributos
+        nombre="marca"
+        tipo="String"/>
+    <atributos
+        nombre="modelo"
+        tipo="String"/>
+  </clases>
+  <clases nombre="Moto">
+    <atributos
+        nombre="cilindrada"
+        tipo="String"/>
+  </clases>
+  <clases nombre="Coche">
+    <atributos
+        nombre="numPuertas"
+        tipo="String"/>
+  </clases>
+  <clases nombre="CocheGasolina">
+    <atributos
+        nombre="capacidadDepisito"
+        tipo="String"/>
+  </clases>
+  <clases nombre="CocheElectrico">
+    <atributos
+        nombre="autonomiaKm"
+        tipo="String"/>
+  </clases>
+  <clases nombre="Persona">
+    <atributos
+        nombre="dni"
+        tipo="String"/>
+    <atributos
+        nombre="nombre"
+        tipo="String"/>
+  </clases>
+  <clases nombre="Aseguradora">
+    <atributos
+        nombre="cif"
+        tipo="String"/>
+  </clases>
+  <clases nombre="Contrato">
+    <atributos
+        nombre="fechaIni"
+        tipo="String"/>
+  </clases>
+</metamodeloDC:DiagramaClases>

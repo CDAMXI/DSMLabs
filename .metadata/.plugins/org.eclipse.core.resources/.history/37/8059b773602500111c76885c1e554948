@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metamodeloDC:DiagramaClases
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:metamodeloDC="http://www.example.org/metamodeloDC"
+    xsi:schemaLocation="http://www.example.org/metamodeloDC metamodeloDC.ecore">
+  <clases nombre="Vehiculo"/>
+  <clases nombre="Moto"/>
+  <clases nombre="Coche"/>
+  <clases nombre="CocheGasolina"/>
+  <clases nombre="CocheElectrico"/>
+</metamodeloDC:DiagramaClases>

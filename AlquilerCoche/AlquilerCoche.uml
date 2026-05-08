@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_rEuLUCVBEfGFQdD3jc1vZA" name="AlquilerCoche">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_rRjtcCVBEfGFQdD3jc1vZA">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_0Crk0CVBEfGFQdD3jc1vZA" name="Vehiculo">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_X3w8UCVDEfGFQdD3jc1vZA" name="matricula"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_oGaVMCVDEfGFQdD3jc1vZA" name="marca"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_qQV2ICVDEfGFQdD3jc1vZA" name="modelo"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_2Km6oCVBEfGFQdD3jc1vZA" name="Moto">
+    <generalization xmi:type="uml:Generalization" xmi:id="_ixr2wCVEEfGFQdD3jc1vZA" general="_0Crk0CVBEfGFQdD3jc1vZA"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_vn5wsCVDEfGFQdD3jc1vZA" name="cilindrada"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_2yKC0CVBEfGFQdD3jc1vZA" name="Coche">
+    <generalization xmi:type="uml:Generalization" xmi:id="_iGxRgCVEEfGFQdD3jc1vZA" general="_0Crk0CVBEfGFQdD3jc1vZA"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_xiVdECVDEfGFQdD3jc1vZA" name="numPuertas"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_4AAWACVBEfGFQdD3jc1vZA" name="CocheGasolina">
+    <generalization xmi:type="uml:Generalization" xmi:id="_jSpOwCVEEfGFQdD3jc1vZA" general="_2yKC0CVBEfGFQdD3jc1vZA"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_znz70CVDEfGFQdD3jc1vZA" name="capacidadDeposito"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_5bYH0CVBEfGFQdD3jc1vZA" name="CocheElectrico">
+    <generalization xmi:type="uml:Generalization" xmi:id="_juVsQCVEEfGFQdD3jc1vZA" general="_2yKC0CVBEfGFQdD3jc1vZA"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_1WsfgCVDEfGFQdD3jc1vZA" name="autonomiaKm"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="__FOsQCVBEfGFQdD3jc1vZA" name="Persona">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_26JPQCVDEfGFQdD3jc1vZA" name="dni"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_36NlICVDEfGFQdD3jc1vZA" name="nombre"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_A7EMgCVCEfGFQdD3jc1vZA" name="Aseguradora">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_6xfUQCVDEfGFQdD3jc1vZA" name="nombre"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_8NYDcCVDEfGFQdD3jc1vZA" name="cif"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_gX3DMiVFEfGFQdD3jc1vZA" name="vehiculo" type="_0Crk0CVBEfGFQdD3jc1vZA" association="_gX2cICVFEfGFQdD3jc1vZA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_n57GcCVFEfGFQdD3jc1vZA" name="LiteralInteger1" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_n57tgCVFEfGFQdD3jc1vZA" name="LiteralUnlimitedNatural1" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_gX2cICVFEfGFQdD3jc1vZA" memberEnd="_gX3DMiVFEfGFQdD3jc1vZA _gX3qQCVFEfGFQdD3jc1vZA">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_gX3DMCVFEfGFQdD3jc1vZA" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_gX3DMSVFEfGFQdD3jc1vZA" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_gX3qQCVFEfGFQdD3jc1vZA" name="aseguradora" type="_A7EMgCVCEfGFQdD3jc1vZA" association="_gX2cICVFEfGFQdD3jc1vZA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_hzZNECVFEfGFQdD3jc1vZA" name="LiteralInteger1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_hzZ0ICVFEfGFQdD3jc1vZA" name="LiteralUnlimitedNatural1" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:AssociationClass" xmi:id="_VzZwgCVGEfGFQdD3jc1vZA" name="Contrato" memberEnd="_VzaXkiVGEfGFQdD3jc1vZA _Vza-oCVGEfGFQdD3jc1vZA">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_VzaXkCVGEfGFQdD3jc1vZA" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_VzaXkSVGEfGFQdD3jc1vZA" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_BIddYCVEEfGFQdD3jc1vZA" name="FechaIni"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_CfF5ICVEEfGFQdD3jc1vZA" name="FechaFin"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_EQKOICVEEfGFQdD3jc1vZA" name="precioTotal"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_VzaXkiVGEfGFQdD3jc1vZA" name="vehiculo" type="_0Crk0CVBEfGFQdD3jc1vZA" association="_VzZwgCVGEfGFQdD3jc1vZA"/>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_Vza-oCVGEfGFQdD3jc1vZA" name="persona" type="__FOsQCVBEfGFQdD3jc1vZA" association="_VzZwgCVGEfGFQdD3jc1vZA"/>
+  </packagedElement>
+</uml:Model>
