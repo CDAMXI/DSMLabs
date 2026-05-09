@@ -17,7 +17,6 @@ helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
       r.finRelacion->exists(fr | fr.clase <> self and fr.max = 1)
     );
 
--- Lazy rule: columna PK de una Clase
 lazy rule PKCol {
   from c : DC_UML!Clase
   to col : ER_2026!Columna (
@@ -30,7 +29,6 @@ lazy rule PKCol {
   )
 }
 
--- Lazy rule: columna FK para una Relacion con max=1 (Inc6)
 lazy rule FKCol {
   from r : DC_UML!Relacion
   to col : ER_2026!Columna (
@@ -43,20 +41,6 @@ lazy rule FKCol {
   )
 }
 
--- Lazy rule: columna FK para un FinRelacion de ClaseAsociacion (Inc7)
-lazy rule FKColCA {
-  from fr : DC_UML!FinRelacion
-  to col : ER_2026!Columna (
-    nombre     <- 'id_' + fr.clase.nombre,
-    tipo       <- #integer,
-    esPrimaria <- false,
-    esUnico    <- false,
-    rango      <- 0,
-    esNulo     <- false
-  )
-}
-
--- Incremento 1+2+6+7: Diagrama → Esquema con Tablas y ClavesAjenas
 rule Diagrama2Esquema {
   from d : DC_UML!Diagrama
   to e : ER_2026!Esquema (
@@ -65,15 +49,10 @@ rule Diagrama2Esquema {
     clavesAjenas <- d.relaciones->select(r |
       r.finRelacion->exists(fr | fr.max = 1) and
       r.claseasociacion.oclIsUndefined()
-    )->union(
-      DC_UML!FinRelacion.allInstances()->select(fr |
-        not fr.relacion.claseasociacion.oclIsUndefined()
-      )
     )
   )
 }
 
--- Incremento 2+3+4+5+6: Clase regular → Tabla
 rule Clase2Tabla {
   from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
   to t : ER_2026!Tabla (
@@ -86,20 +65,14 @@ rule Clase2Tabla {
   )
 }
 
--- Incremento 2+3+4+5+7: ClaseAsociacion → Tabla con FKs
 rule ClaseAsociacion2Tabla {
   from ca : DC_UML!ClaseAsociacion
   to t : ER_2026!Tabla (
     nombre   <- ca.nombre,
-    columnas <- Sequence{thisModule.PKCol(ca)}->union(
-      ca.atributos->union(
-        ca.asociacion.finRelacion->collect(fr | thisModule.FKColCA(fr))
-      )
-    )
+    columnas <- Sequence{thisModule.PKCol(ca)}->union(ca.atributos)
   )
 }
 
--- Incremento 4+5: Atributo → Columna
 rule Atributo2Columna {
   from a : DC_UML!Atributo
   to col : ER_2026!Columna (
@@ -112,7 +85,6 @@ rule Atributo2Columna {
   )
 }
 
--- Incremento 6: Relacion con max=1 → ClaveAjena
 rule Relacion2ClaveAjena {
   from r : DC_UML!Relacion (
     r.finRelacion->exists(fr | fr.max = 1) and
@@ -122,19 +94,7 @@ rule Relacion2ClaveAjena {
     nombre        <- 'FK_' + r.nombre,
     columnas      <- Sequence{thisModule.FKCol(r)},
     referenciadas <- Sequence{thisModule.PKCol(
-      r.finRelacion->select(fr | fr.max = 1)->first().clase
-    )}
-  )
-}
-
--- Incremento 7: FinRelacion de ClaseAsociacion → ClaveAjena
-rule FinRelacionCA2ClaveAjena {
-  from fr : DC_UML!FinRelacion (
-    not fr.relacion.claseasociacion.oclIsUndefined()
-  )
-  to fk : ER_2026!ClaveAjena (
-    nombre        <- 'FK_' + fr.relacion.nombre + '_' + fr.clase.nombre,
-    columnas      <- Sequence{thisModule.FKColCA(fr)},
-    referenciadas <- Sequence{thisModule.PKCol(fr.clase)}
+  r.finRelacion->select(fr | fr.max = 1)->first().clase
+)}
   )
 }
