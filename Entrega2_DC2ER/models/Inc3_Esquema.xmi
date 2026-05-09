@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<er_2026:Esquema xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:er_2026="http://DSM/ER_2026" nombre="AlquilerCoche">
+  <tablas nombre="Vehiculo">
+    <columnas nombre="id_Vehiculo" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="Moto">
+    <columnas nombre="id_Moto" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="Coche">
+    <columnas nombre="id_Coche" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="CocheGasolina">
+    <columnas nombre="id_CocheGasolina" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="CocheElectrico">
+    <columnas nombre="id_CocheElectrico" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="Persona">
+    <columnas nombre="id_Persona" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="Aseguradora">
+    <columnas nombre="id_Aseguradora" esPrimaria="true" esUnico="true"/>
+  </tablas>
+  <tablas nombre="Contrato">
+    <columnas nombre="id_Contrato" esPrimaria="true" esUnico="true"/>
+  </tablas>
+</er_2026:Esquema>
