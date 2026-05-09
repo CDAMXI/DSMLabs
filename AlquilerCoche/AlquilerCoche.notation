@@ -274,13 +274,13 @@
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_BsUthCVGEfGFQdD3jc1vZA" source="PapyrusCSSForceValue">
         <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_BsUthSVGEfGFQdD3jc1vZA" key="visible" value="true"/>
       </eAnnotations>
-      <layoutConstraint xmi:type="notation:Location" xmi:id="_gX44aCVFEfGFQdD3jc1vZA" y="-20"/>
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gX44aCVFEfGFQdD3jc1vZA" x="12" y="-42"/>
     </children>
     <children xmi:type="notation:DecorationNode" xmi:id="_gX44aSVFEfGFQdD3jc1vZA" type="Association_SourceRoleLabel">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_BsVUkSVGEfGFQdD3jc1vZA" source="PapyrusCSSForceValue">
         <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_BsVUkiVGEfGFQdD3jc1vZA" key="visible" value="true"/>
       </eAnnotations>
-      <layoutConstraint xmi:type="notation:Location" xmi:id="_gX44aiVFEfGFQdD3jc1vZA" y="20"/>
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gX44aiVFEfGFQdD3jc1vZA" x="-10" y="31"/>
     </children>
     <children xmi:type="notation:DecorationNode" xmi:id="_gX44ayVFEfGFQdD3jc1vZA" type="Association_SourceMultiplicityLabel">
       <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_BsUtgiVGEfGFQdD3jc1vZA" source="PapyrusCSSForceValue">
