@@ -63,4 +63,3 @@ rule Atributo2Columna {
       rango      <- 0,
       esNulo     <- false
     )
-}

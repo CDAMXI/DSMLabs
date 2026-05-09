@@ -19,7 +19,7 @@ rule Clase2Tabla {
   to
     t : ER_2026!Tabla (
       nombre   <- c.nombre,
-      columnas <- Sequence { colId }->union(c.atributos)
+      columnas <- Sequence { colId } + c.atributos
     ),
     colId : ER_2026!Columna (
       nombre     <- 'id_' + c.nombre,
@@ -38,7 +38,7 @@ rule ClaseAsociacion2Tabla {
   to
     t : ER_2026!Tabla (
       nombre   <- ca.nombre,
-      columnas <- Sequence { colId }->union(ca.atributos)
+      columnas <- Sequence { colId } + ca.atributos
     ),
     colId : ER_2026!Columna (
       nombre     <- 'id_' + ca.nombre,
