@@ -1,0 +1,51 @@
+module DC2ER;
+create ER : ER_2026 from DC : DC_UML;
+
+-- Incremento 1+2: Diagrama → Esquema con Tablas
+rule Diagrama2Esquema {
+  from
+    d : DC_UML!Diagrama
+  to
+    e : ER_2026!Esquema (
+      nombre <- d.nombre,
+      tablas <- DC_UML!Clase.allInstances()
+    )
+}
+
+-- Incremento 2+3: Clase regular → Tabla con columna Id
+rule Clase2Tabla {
+  from
+    c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
+  to
+    t : ER_2026!Tabla (
+      nombre   <- c.nombre,
+      columnas <- Sequence { colId }
+    ),
+    colId : ER_2026!Columna (
+      nombre     <- 'id_' + c.nombre,
+      tipo       <- #integer,
+      esPrimaria <- true,
+      esUnico    <- true,
+      esNulo     <- false,
+      rango      <- 0
+    )
+}
+
+-- Incremento 2+3: ClaseAsociacion → Tabla con columna Id
+rule ClaseAsociacion2Tabla {
+  from
+    ca : DC_UML!ClaseAsociacion
+  to
+    t : ER_2026!Tabla (
+      nombre   <- ca.nombre,
+      columnas <- Sequence { colId }
+    ),
+    colId : ER_2026!Columna (
+      nombre     <- 'id_' + ca.nombre,
+      tipo       <- #integer,
+      esPrimaria <- true,
+      esUnico    <- true,
+      esNulo     <- false,
+      rango      <- 0
+    )
+}

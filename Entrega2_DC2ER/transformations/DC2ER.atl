@@ -1,5 +1,16 @@
-module DC2ER;
+module DC2ER_Inc7;
 create ER : ER_2026 from DC : DC_UML;
+
+-- ============================================================
+-- INCREMENTO 7: FKs para relaciones muchos a muchos (N..M)
+-- con ClaseAsociacion.
+-- Estrategia: cada FinRelacion de la relación N..M genera una
+-- columna FK dentro de la tabla de la ClaseAsociacion, más una
+-- ClaveAjena que referencia la PK de la clase correspondiente.
+-- Ejemplo: alquila (Persona * <-> Vehiculo *) con Contrato:
+--   Tabla Contrato recibe id_Persona (FK) e id_Vehiculo (FK).
+--   Se generan FK_alquila_Persona y FK_alquila_Vehiculo.
+-- ============================================================
 
 helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
   if t = #entero   then #integer
@@ -17,8 +28,10 @@ helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
       r.finRelacion->exists(fr | fr.clase <> self and fr.max = 1)
     );
 
--- Lazy rule: columna PK de una Clase
-lazy rule PKCol {
+-- unique lazy rule: garantiza reutilización de la misma instancia
+-- cuando se llama desde Clase2Tabla y desde FinRelacionCA2ClaveAjena.
+
+unique lazy rule PKCol {
   from c : DC_UML!Clase
   to col : ER_2026!Columna (
     nombre     <- 'id_' + c.nombre,
@@ -30,8 +43,7 @@ lazy rule PKCol {
   )
 }
 
--- Lazy rule: columna FK para una Relacion con max=1 (Inc6)
-lazy rule FKCol {
+unique lazy rule FKCol {
   from r : DC_UML!Relacion
   to col : ER_2026!Columna (
     nombre     <- 'id_' + r.finRelacion->select(fr | fr.max = 1)->first().clase.nombre,
@@ -43,8 +55,10 @@ lazy rule FKCol {
   )
 }
 
--- Lazy rule: columna FK para un FinRelacion de ClaseAsociacion (Inc7)
-lazy rule FKColCA {
+-- Columna FK para un FinRelacion de una relación N..M.
+-- El nombre es id_NombreClaseExtremo (ej: id_Persona, id_Vehiculo).
+-- Se crea una instancia por cada extremo de la relación N..M.
+unique lazy rule FKColCA {
   from fr : DC_UML!FinRelacion
   to col : ER_2026!Columna (
     nombre     <- 'id_' + fr.clase.nombre,
@@ -56,7 +70,8 @@ lazy rule FKColCA {
   )
 }
 
--- Incremento 1+2+6+7: Diagrama → Esquema con Tablas y ClavesAjenas
+-- Inc1+2+6+7: las ClavesAjenas incluyen tanto las de relaciones 1..N
+-- como las generadas por cada FinRelacion de relaciones N..M.
 rule Diagrama2Esquema {
   from d : DC_UML!Diagrama
   to e : ER_2026!Esquema (
@@ -73,7 +88,6 @@ rule Diagrama2Esquema {
   )
 }
 
--- Incremento 2+3+4+5+6: Clase regular → Tabla
 rule Clase2Tabla {
   from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
   to t : ER_2026!Tabla (
@@ -86,7 +100,9 @@ rule Clase2Tabla {
   )
 }
 
--- Incremento 2+3+4+5+7: ClaseAsociacion → Tabla con FKs
+-- Inc2+3+4+5+7: la tabla de la ClaseAsociacion incluye su PK,
+-- sus atributos propios, y una columna FK por cada extremo
+-- de la relación N..M a la que pertenece.
 rule ClaseAsociacion2Tabla {
   from ca : DC_UML!ClaseAsociacion
   to t : ER_2026!Tabla (
@@ -99,7 +115,6 @@ rule ClaseAsociacion2Tabla {
   )
 }
 
--- Incremento 4+5: Atributo → Columna
 rule Atributo2Columna {
   from a : DC_UML!Atributo
   to col : ER_2026!Columna (
@@ -112,7 +127,6 @@ rule Atributo2Columna {
   )
 }
 
--- Incremento 6: Relacion con max=1 → ClaveAjena
 rule Relacion2ClaveAjena {
   from r : DC_UML!Relacion (
     r.finRelacion->exists(fr | fr.max = 1) and
@@ -127,7 +141,10 @@ rule Relacion2ClaveAjena {
   )
 }
 
--- Incremento 7: FinRelacion de ClaseAsociacion → ClaveAjena
+-- Inc7: cada FinRelacion de una relación N..M genera una ClaveAjena.
+-- El nombre sigue el patrón FK_nombreRelacion_nombreClase.
+-- columnas: FK en la tabla de la ClaseAsociacion.
+-- referenciadas: PK de la clase del extremo correspondiente.
 rule FinRelacionCA2ClaveAjena {
   from fr : DC_UML!FinRelacion (
     not fr.relacion.claseasociacion.oclIsUndefined()

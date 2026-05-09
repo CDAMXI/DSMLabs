@@ -1,32 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <er_2026:Esquema xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:er_2026="http://DSM/ER_2026" nombre="AlquilerCoche">
-  <tablas nombre="Vehiculo">
-    <columnas nombre="matricula" tipo="string" esNulo="true"/>
-    <columnas nombre="marca" tipo="string" esNulo="true"/>
-    <columnas nombre="modelo" tipo="string" esNulo="true"/>
-  </tablas>
-  <tablas nombre="Moto">
-    <columnas nombre="cilindrada" tipo="string" esNulo="true"/>
-  </tablas>
-  <tablas nombre="Coche">
-    <columnas nombre="numPuertas" esNulo="true"/>
-  </tablas>
-  <tablas nombre="CocheGasolina">
-    <columnas nombre="capacidadDeposito" tipo="double" esNulo="true"/>
-  </tablas>
-  <tablas nombre="CocheElectrico">
-    <columnas nombre="autonomiaKm" tipo="double" esNulo="true"/>
-  </tablas>
-  <tablas nombre="Persona">
-    <columnas nombre="dni" tipo="string"/>
-    <columnas nombre="nombre" tipo="string" esNulo="true"/>
-  </tablas>
-  <tablas nombre="Aseguradora">
-    <columnas nombre="cif" tipo="string"/>
-  </tablas>
-  <tablas nombre="Contrato">
-    <columnas nombre="fechaInicio" tipo="fecha"/>
-    <columnas nombre="fechaFin" tipo="fecha"/>
-    <columnas nombre="precioTotal" tipo="double"/>
-  </tablas>
+  <tablas nombre="Vehiculo"/>
+  <tablas nombre="Moto"/>
+  <tablas nombre="Coche"/>
+  <tablas nombre="CocheGasolina"/>
+  <tablas nombre="CocheElectrico"/>
+  <tablas nombre="Persona"/>
+  <tablas nombre="Aseguradora"/>
+  <tablas nombre="Contrato"/>
 </er_2026:Esquema>

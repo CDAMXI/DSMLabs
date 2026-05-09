@@ -7,4 +7,3 @@ rule Diagrama2Esquema {
   to e : ER_2026!Esquema (
     nombre <- d.nombre
   )
-}

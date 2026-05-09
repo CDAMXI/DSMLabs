@@ -1,66 +1,43 @@
-module DC2ER;
+module DC2ER_Inc4;
 create ER : ER_2026 from DC : DC_UML;
 
--- Incremento 1+2: Diagrama → Esquema con Tablas
 rule Diagrama2Esquema {
-  from
-    d : DC_UML!Diagrama
-  to
-    e : ER_2026!Esquema (
-      nombre <- d.nombre,
-      tablas <- DC_UML!Clase.allInstances()
-    )
+  from d : DC_UML!Diagrama
+  to e : ER_2026!Esquema (
+    nombre <- d.nombre,
+    tablas <- DC_UML!Clase.allInstances()
+  )
 }
 
--- Incremento 2+3+4: Clase regular → Tabla con Id y columnas
 rule Clase2Tabla {
-  from
-    c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
-  to
-    t : ER_2026!Tabla (
-      nombre   <- c.nombre,
-      columnas <- Sequence { colId }->union(c.atributos)
-    ),
-    colId : ER_2026!Columna (
-      nombre     <- 'id_' + c.nombre,
-      tipo       <- #integer,
-      esPrimaria <- true,
-      esUnico    <- true,
-      esNulo     <- false,
-      rango      <- 0
-    )
+  from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
+  to t : ER_2026!Tabla (
+    nombre   <- c.nombre,
+    columnas <- Sequence{colId}->union(c.atributos)
+  ),
+  colId : ER_2026!Columna (
+    nombre <- 'id_' + c.nombre, tipo <- #integer,
+    esPrimaria <- true, esUnico <- true, esNulo <- false, rango <- 0
+  )
 }
 
--- Incremento 2+3+4: ClaseAsociacion → Tabla con Id y columnas
 rule ClaseAsociacion2Tabla {
-  from
-    ca : DC_UML!ClaseAsociacion
-  to
-    t : ER_2026!Tabla (
-      nombre   <- ca.nombre,
-      columnas <- Sequence { colId }->union(ca.atributos)
-    ),
-    colId : ER_2026!Columna (
-      nombre     <- 'id_' + ca.nombre,
-      tipo       <- #integer,
-      esPrimaria <- true,
-      esUnico    <- true,
-      esNulo     <- false,
-      rango      <- 0
-    )
+  from ca : DC_UML!ClaseAsociacion
+  to t : ER_2026!Tabla (
+    nombre   <- ca.nombre,
+    columnas <- Sequence{colId}->union(ca.atributos)
+  ),
+  colId : ER_2026!Columna (
+    nombre <- 'id_' + ca.nombre, tipo <- #integer,
+    esPrimaria <- true, esUnico <- true, esNulo <- false, rango <- 0
+  )
 }
 
--- Incremento 4: Atributo → Columna (sin tipo mapeado aún)
+-- Inc4: Atributo → Columna con tipo fijo (sin mapeo aún)
 rule Atributo2Columna {
-  from
-    a : DC_UML!Atributo
-  to
-    col : ER_2026!Columna (
-      nombre     <- a.nombre,
-      tipo       <- #integer,
-      esPrimaria <- false,
-      esUnico    <- false,
-      rango      <- 0,
-      esNulo     <- false
-    )
+  from a : DC_UML!Atributo
+  to col : ER_2026!Columna (
+    nombre <- a.nombre, tipo <- #integer,
+    esPrimaria <- false, esUnico <- false, rango <- 0, esNulo <- false
+  )
 }

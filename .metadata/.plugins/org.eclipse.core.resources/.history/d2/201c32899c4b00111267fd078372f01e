@@ -1,16 +1,6 @@
-module DC2ER_Inc6;
+module DC2ER;
 create ER : ER_2026 from DC : DC_UML;
 
--- ============================================================
--- INCREMENTO 6: FKs para relaciones con multiplicidad máxima 1
--- en algún extremo (relaciones 1..N o 1..1)
--- Estrategia: el lado "muchos" (max≠1) recibe una columna FK
--- que apunta a la PK del lado "uno" (max=1).
--- ============================================================
-
--- Mapeo de tipos del metamodelo DC_UML al metamodelo ER_2026.
--- Los valores del enum Tipos (entero, cadena, real, boolean, fecha)
--- se traducen a los valores del enum TiposER (integer, string, double, bool, fecha).
 helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
   if t = #entero   then #integer
   else if t = #cadena  then #string
@@ -19,9 +9,6 @@ helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
   else #fecha
   endif endif endif endif;
 
--- Selecciona las relaciones donde esta Clase aparece en el lado "muchos"
--- (max distinto de 1) y la otra clase aparece en el lado "uno" (max=1).
--- Solo se consideran relaciones sin ClaseAsociacion (esas van en Inc7).
 helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
   DC_UML!Relacion.allInstances()
     ->select(r | r.claseasociacion.oclIsUndefined())
@@ -30,12 +17,7 @@ helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
       r.finRelacion->exists(fr | fr.clase <> self and fr.max = 1)
     );
 
--- unique lazy rule: garantiza que la misma instancia de Columna se reutiliza
--- cuando se llama con el mismo argumento desde distintas reglas.
--- Sin "unique", cada invocación crearía un objeto distinto, generando
--- columnas huérfanas no contenidas en ninguna Tabla.
-
--- Columna PK para una Clase (id_NombreClase, esPrimaria=true).
+-- Lazy rule: columna PK de una Clase
 unique lazy rule PKCol {
   from c : DC_UML!Clase
   to col : ER_2026!Columna (
@@ -48,9 +30,7 @@ unique lazy rule PKCol {
   )
 }
 
--- Columna FK para una Relacion 1..N.
--- El nombre se deriva del lado "uno" (max=1): id_ClaseUno.
--- esNulo depende de la cardinalidad mínima del lado "muchos".
+-- Lazy rule: columna FK para una Relacion con max=1 (Inc6)
 unique lazy rule FKCol {
   from r : DC_UML!Relacion
   to col : ER_2026!Columna (
@@ -63,8 +43,20 @@ unique lazy rule FKCol {
   )
 }
 
--- Inc1+2+6: el Esquema contiene las Tablas de todas las Clases
--- y las ClavesAjenas generadas por las relaciones 1..N sin ClaseAsociacion.
+-- Lazy rule: columna FK para un FinRelacion de ClaseAsociacion (Inc7)
+unique lazy rule FKColCA {
+  from fr : DC_UML!FinRelacion
+  to col : ER_2026!Columna (
+    nombre     <- 'id_' + fr.clase.nombre,
+    tipo       <- #integer,
+    esPrimaria <- false,
+    esUnico    <- false,
+    rango      <- 0,
+    esNulo     <- false
+  )
+}
+
+-- Incremento 1+2+6+7: Diagrama → Esquema con Tablas y ClavesAjenas
 rule Diagrama2Esquema {
   from d : DC_UML!Diagrama
   to e : ER_2026!Esquema (
@@ -73,14 +65,15 @@ rule Diagrama2Esquema {
     clavesAjenas <- d.relaciones->select(r |
       r.finRelacion->exists(fr | fr.max = 1) and
       r.claseasociacion.oclIsUndefined()
+    )->union(
+      DC_UML!FinRelacion.allInstances()->select(fr |
+        not fr.relacion.claseasociacion.oclIsUndefined()
+      )
     )
   )
 }
 
--- Inc2+3+4+5+6: cada Clase regular genera una Tabla con:
--- - columna PK (id_NombreClase)
--- - columnas de sus atributos (via Atributo2Columna)
--- - columnas FK por cada relación donde es el lado "muchos"
+-- Incremento 2+3+4+5+6: Clase regular → Tabla
 rule Clase2Tabla {
   from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
   to t : ER_2026!Tabla (
@@ -93,18 +86,20 @@ rule Clase2Tabla {
   )
 }
 
--- Inc2+3+4+5: ClaseAsociacion genera Tabla con PK y atributos propios.
--- Las FKs de la relación N..M se añaden en Inc7.
+-- Incremento 2+3+4+5+7: ClaseAsociacion → Tabla con FKs
 rule ClaseAsociacion2Tabla {
   from ca : DC_UML!ClaseAsociacion
   to t : ER_2026!Tabla (
     nombre   <- ca.nombre,
-    columnas <- Sequence{thisModule.PKCol(ca)}->union(ca.atributos)
+    columnas <- Sequence{thisModule.PKCol(ca)}->union(
+      ca.atributos->union(
+        ca.asociacion.finRelacion->collect(fr | thisModule.FKColCA(fr))
+      )
+    )
   )
 }
 
--- Inc4+5: cada Atributo se convierte en una Columna con tipo mapeado.
--- esNulo=true si min=0 (atributo opcional), false si min=1 (obligatorio).
+-- Incremento 4+5: Atributo → Columna
 rule Atributo2Columna {
   from a : DC_UML!Atributo
   to col : ER_2026!Columna (
@@ -117,10 +112,7 @@ rule Atributo2Columna {
   )
 }
 
--- Inc6: cada Relacion con max=1 en algún extremo genera una ClaveAjena.
--- columnas: la FK en la tabla del lado "muchos".
--- referenciadas: la PK de la tabla del lado "uno".
--- La ClaveAjena se llama FK_nombreRelacion.
+-- Incremento 6: Relacion con max=1 → ClaveAjena
 rule Relacion2ClaveAjena {
   from r : DC_UML!Relacion (
     r.finRelacion->exists(fr | fr.max = 1) and
@@ -132,5 +124,17 @@ rule Relacion2ClaveAjena {
     referenciadas <- Sequence{thisModule.PKCol(
       r.finRelacion->select(fr | fr.max = 1)->first().clase
     )}
+  )
+}
+
+-- Incremento 7: FinRelacion de ClaseAsociacion → ClaveAjena
+rule FinRelacionCA2ClaveAjena {
+  from fr : DC_UML!FinRelacion (
+    not fr.relacion.claseasociacion.oclIsUndefined()
+  )
+  to fk : ER_2026!ClaveAjena (
+    nombre        <- 'FK_' + fr.relacion.nombre + '_' + fr.clase.nombre,
+    columnas      <- Sequence{thisModule.FKColCA(fr)},
+    referenciadas <- Sequence{thisModule.PKCol(fr.clase)}
   )
 }

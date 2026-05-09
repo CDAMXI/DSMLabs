@@ -1,0 +1,12 @@
+module DC2ER;
+create ER : ER_2026 from DC : DC_UML;
+
+-- Incremento 1: DiagramaClases → Esquema Relacional
+rule Diagrama2Esquema {
+  from
+    d : DC_UML!Diagrama
+  to
+    e : ER_2026!Esquema (
+      nombre <- d.nombre
+    )
+}

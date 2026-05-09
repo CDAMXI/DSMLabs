@@ -1,59 +1,23 @@
-module DC2ER;
+module DC2ER_Inc2;
 create ER : ER_2026 from DC : DC_UML;
 
--- Helper: mapeo de tipos DC → tipos ER
-helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
-  if t = #entero   then #integer
-  else if t = #cadena  then #string
-  else if t = #real    then #double
-  else if t = #boolean then #bool
-  else #fecha
-  endif endif endif endif;
-
--- Incremento 1 (actualizado): añade tablas al Esquema
+-- Inc1+2: Diagrama → Esquema con Tablas vacías
 rule Diagrama2Esquema {
-  from
-    d : DC_UML!Diagrama
-  to
-    e : ER_2026!Esquema (
-      nombre <- d.nombre,
-      tablas <- DC_UML!Clase.allInstances()
-    )
+  from d : DC_UML!Diagrama
+  to e : ER_2026!Esquema (
+    nombre <- d.nombre,
+    tablas <- DC_UML!Clase.allInstances()
+  )
 }
 
--- Incremento 2a: Clase regular → Tabla
+-- Inc2: Clase regular → Tabla sin columnas
 rule Clase2Tabla {
-  from
-    c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
-  to
-    t : ER_2026!Tabla (
-      nombre  <- c.nombre,
-      columnas <- c.atributos
-    )
+  from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
+  to t : ER_2026!Tabla (nombre <- c.nombre)
 }
 
--- Incremento 2b: ClaseAsociacion → Tabla
+-- Inc2: ClaseAsociacion → Tabla sin columnas
 rule ClaseAsociacion2Tabla {
-  from
-    ca : DC_UML!ClaseAsociacion (ca.oclIsTypeOf(DC_UML!ClaseAsociacion))
-  to
-    t : ER_2026!Tabla (
-      nombre   <- ca.nombre,
-      columnas <- ca.atributos
-    )
-}
-
--- Incremento 2c: Atributo → Columna
-rule Atributo2Columna {
-  from
-    a : DC_UML!Atributo
-  to
-    col : ER_2026!Columna (
-      nombre     <- a.nombre,
-      tipo       <- thisModule.tipoToTipoER(a.tipo),
-      esPrimaria <- false,
-      esUnico    <- false,
-      rango      <- 0,
-      esNulo     <- a.min = 0
-    )
+  from ca : DC_UML!ClaseAsociacion
+  to t : ER_2026!Tabla (nombre <- ca.nombre)
 }
