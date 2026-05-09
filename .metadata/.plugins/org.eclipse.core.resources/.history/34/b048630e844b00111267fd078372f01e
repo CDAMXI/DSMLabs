@@ -1,15 +1,6 @@
 module DC2ER;
 create ER : ER_2026 from DC : DC_UML;
 
--- Helper: mapeo de tipos DC → tipos ER
-helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
-  if t = #entero   then #integer
-  else if t = #cadena  then #string
-  else if t = #real    then #double
-  else if t = #boolean then #bool
-  else #fecha
-  endif endif endif endif;
-
 -- Incremento 1+2: Diagrama → Esquema con Tablas
 rule Diagrama2Esquema {
   from
@@ -21,7 +12,7 @@ rule Diagrama2Esquema {
     )
 }
 
--- Incremento 2+3+4+5: Clase regular → Tabla con Id y columnas
+-- Incremento 2+3+4: Clase regular → Tabla con Id y columnas
 rule Clase2Tabla {
   from
     c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
@@ -40,7 +31,7 @@ rule Clase2Tabla {
     )
 }
 
--- Incremento 2+3+4+5: ClaseAsociacion → Tabla con Id y columnas
+-- Incremento 2+3+4: ClaseAsociacion → Tabla con Id y columnas
 rule ClaseAsociacion2Tabla {
   from
     ca : DC_UML!ClaseAsociacion
@@ -59,17 +50,17 @@ rule ClaseAsociacion2Tabla {
     )
 }
 
--- Incremento 4+5: Atributo → Columna con tipo y esNulo correctos
+-- Incremento 4: Atributo → Columna (sin tipo mapeado aún)
 rule Atributo2Columna {
   from
     a : DC_UML!Atributo
   to
     col : ER_2026!Columna (
       nombre     <- a.nombre,
-      tipo       <- thisModule.tipoToTipoER(a.tipo),
+      tipo       <- #integer,
       esPrimaria <- false,
       esUnico    <- false,
-      rango      <- a.max,
-      esNulo     <- a.min = 0
+      rango      <- 0,
+      esNulo     <- false
     )
 }
