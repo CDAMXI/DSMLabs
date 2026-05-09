@@ -66,7 +66,7 @@ rule Clase2Tabla {
 }
 
 rule ClaseAsociacion2Tabla {
-  from ca : DC_UML!ClaseAsociacion
+  from ca : DC_UML!ClaseAsociacion 
   to t : ER_2026!Tabla (
     nombre   <- ca.nombre,
     columnas <- Sequence{thisModule.PKCol(ca)}->union(ca.atributos)
@@ -93,8 +93,9 @@ rule Relacion2ClaveAjena {
   to fk : ER_2026!ClaveAjena (
     nombre        <- 'FK_' + r.nombre,
     columnas      <- Sequence{thisModule.FKCol(r)},
-    referenciadas <- Sequence{thisModule.PKCol(
-  r.finRelacion->select(fr | fr.max = 1)->first().clase
-)}
+    referenciadas <- Sequence{
+      thisModule.resolve(r.finRelacion->select(fr | fr.max = 1)->first().clase)
+        .columnas->select(col | col.esPrimaria)->first()
+    }
   )
 }

@@ -1,6 +1,7 @@
 module DC2ER;
 create ER : ER_2026 from DC : DC_UML;
 
+-- Helper: mapeo de tipos DC → tipos ER
 helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
   if t = #entero   then #integer
   else if t = #cadena  then #string
@@ -9,6 +10,7 @@ helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
   else #fecha
   endif endif endif endif;
 
+-- Helper: relaciones donde esta Clase es el lado "muchos"
 helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
   DC_UML!Relacion.allInstances()
     ->select(r | r.claseasociacion.oclIsUndefined())
@@ -17,6 +19,7 @@ helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
       r.finRelacion->exists(fr | fr.clase <> self and fr.max = 1)
     );
 
+-- Lazy rule: columna PK de una Clase (reutilizable)
 lazy rule PKCol {
   from c : DC_UML!Clase
   to col : ER_2026!Columna (
@@ -29,6 +32,7 @@ lazy rule PKCol {
   )
 }
 
+-- Lazy rule: columna FK para una Relacion (reutilizable)
 lazy rule FKCol {
   from r : DC_UML!Relacion
   to col : ER_2026!Columna (
@@ -41,6 +45,7 @@ lazy rule FKCol {
   )
 }
 
+-- Incremento 1+2+6: Diagrama → Esquema con Tablas y ClavesAjenas
 rule Diagrama2Esquema {
   from d : DC_UML!Diagrama
   to e : ER_2026!Esquema (
@@ -53,6 +58,7 @@ rule Diagrama2Esquema {
   )
 }
 
+-- Incremento 2+3+4+5+6: Clase regular → Tabla
 rule Clase2Tabla {
   from c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
   to t : ER_2026!Tabla (
@@ -65,6 +71,7 @@ rule Clase2Tabla {
   )
 }
 
+-- Incremento 2+3+4+5: ClaseAsociacion → Tabla
 rule ClaseAsociacion2Tabla {
   from ca : DC_UML!ClaseAsociacion
   to t : ER_2026!Tabla (
@@ -73,6 +80,7 @@ rule ClaseAsociacion2Tabla {
   )
 }
 
+-- Incremento 4+5: Atributo → Columna con tipo y esNulo
 rule Atributo2Columna {
   from a : DC_UML!Atributo
   to col : ER_2026!Columna (
@@ -85,6 +93,7 @@ rule Atributo2Columna {
   )
 }
 
+-- Incremento 6: Relacion con max=1 → ClaveAjena
 rule Relacion2ClaveAjena {
   from r : DC_UML!Relacion (
     r.finRelacion->exists(fr | fr.max = 1) and
@@ -93,8 +102,8 @@ rule Relacion2ClaveAjena {
   to fk : ER_2026!ClaveAjena (
     nombre        <- 'FK_' + r.nombre,
     columnas      <- Sequence{thisModule.FKCol(r)},
-    referenciadas <- Sequence{thisModule.PKCol(
-  r.finRelacion->select(fr | fr.max = 1)->first().clase
-)}
+    referenciadas <- Sequence{
+      thisModule.PKCol(r.finRelacion->select(fr | fr.max = 1)->first().clase)
+    }
   )
 }

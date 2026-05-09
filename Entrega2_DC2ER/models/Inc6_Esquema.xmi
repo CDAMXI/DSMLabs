@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:er_2026="http://DSM/ER_2026">
+  <er_2026:Esquema nombre="AlquilerCoche">
+    <tablas nombre="Vehiculo">
+      <columnas nombre="id_Vehiculo" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="matricula" tipo="string" rango="1" esNulo="true"/>
+      <columnas nombre="marca" tipo="string" rango="1" esNulo="true"/>
+      <columnas nombre="modelo" tipo="string" rango="1" esNulo="true"/>
+      <columnas nombre="id_Aseguradora" esNulo="true"/>
+    </tablas>
+    <tablas nombre="Moto">
+      <columnas nombre="id_Moto" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="cilindrada" tipo="string" rango="1" esNulo="true"/>
+    </tablas>
+    <tablas nombre="Coche">
+      <columnas nombre="id_Coche" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="numPuertas" rango="1" esNulo="true"/>
+    </tablas>
+    <tablas nombre="CocheGasolina">
+      <columnas nombre="id_CocheGasolina" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="capacidadDeposito" tipo="double" rango="1" esNulo="true"/>
+    </tablas>
+    <tablas nombre="CocheElectrico">
+      <columnas nombre="id_CocheElectrico" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="autonomiaKm" tipo="double" rango="1" esNulo="true"/>
+    </tablas>
+    <tablas nombre="Persona">
+      <columnas nombre="id_Persona" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="dni" tipo="string" rango="1"/>
+      <columnas nombre="nombre" tipo="string" rango="1" esNulo="true"/>
+    </tablas>
+    <tablas nombre="Aseguradora">
+      <columnas nombre="id_Aseguradora" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="cif" tipo="string" rango="1"/>
+    </tablas>
+    <tablas nombre="Contrato">
+      <columnas nombre="id_Contrato" esPrimaria="true" esUnico="true"/>
+      <columnas nombre="fechaInicio" tipo="fecha" rango="1"/>
+      <columnas nombre="fechaFin" tipo="fecha" rango="1"/>
+      <columnas nombre="precioTotal" tipo="double" rango="1"/>
+    </tablas>
+    <clavesAjenas nombre="FK_asegura" columnas="/1" referenciadas="/2"/>
+  </er_2026:Esquema>
+  <er_2026:Columna nombre="id_Aseguradora" claveAjena="/0/@clavesAjenas.0" esNulo="true"/>
+  <er_2026:Columna nombre="id_Aseguradora" esPrimaria="true" enClaveAjena="/0/@clavesAjenas.0" esUnico="true"/>
+</xmi:XMI>

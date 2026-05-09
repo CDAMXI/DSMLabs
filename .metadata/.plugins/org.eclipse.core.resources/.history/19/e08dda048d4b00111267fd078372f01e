@@ -1,0 +1,115 @@
+module DC2ER;
+create ER : ER_2026 from DC : DC_UML;
+
+-- Helper: mapeo de tipos DC → tipos ER
+helper def: tipoToTipoER(t : DC_UML!Tipos) : ER_2026!TiposER =
+  if t = #entero   then #integer
+  else if t = #cadena  then #string
+  else if t = #real    then #double
+  else if t = #boolean then #bool
+  else #fecha
+  endif endif endif endif;
+
+-- Helper: relaciones donde esta Clase es el lado "muchos"
+helper context DC_UML!Clase def: relacionesFK : Sequence(DC_UML!Relacion) =
+  DC_UML!Relacion.allInstances()
+    ->select(r | r.claseasociacion.oclIsUndefined())
+    ->select(r |
+      r.finRelacion->exists(fr | fr.clase = self and fr.max <> 1) and
+      r.finRelacion->exists(fr | fr.clase <> self and fr.max = 1)
+    );
+
+-- Incremento 1+2+6: Diagrama → Esquema con Tablas y ClavesAjenas
+rule Diagrama2Esquema {
+  from
+    d : DC_UML!Diagrama
+  to
+    e : ER_2026!Esquema (
+      nombre      <- d.nombre,
+      tablas      <- DC_UML!Clase.allInstances(),
+      clavesAjenas <- d.relaciones->select(r |
+        r.finRelacion->exists(fr | fr.max = 1) and
+        r.claseasociacion.oclIsUndefined()
+      )
+    )
+}
+
+-- Incremento 2+3+4+5+6: Clase regular → Tabla con Id, columnas y FKs
+rule Clase2Tabla {
+  from
+    c : DC_UML!Clase (c.oclIsTypeOf(DC_UML!Clase))
+  to
+    t : ER_2026!Tabla (
+      nombre   <- c.nombre,
+      columnas <- Sequence { colId }->union(c.atributos)->union(
+        c.relacionesFK->collect(r | r.resolveTemp('fkCol'))
+      )
+    ),
+    colId : ER_2026!Columna (
+      nombre     <- 'id_' + c.nombre,
+      tipo       <- #integer,
+      esPrimaria <- true,
+      esUnico    <- true,
+      esNulo     <- false,
+      rango      <- 0
+    )
+}
+
+-- Incremento 2+3+4+5: ClaseAsociacion → Tabla con Id y columnas
+rule ClaseAsociacion2Tabla {
+  from
+    ca : DC_UML!ClaseAsociacion
+  to
+    t : ER_2026!Tabla (
+      nombre   <- ca.nombre,
+      columnas <- Sequence { colId }->union(ca.atributos)
+    ),
+    colId : ER_2026!Columna (
+      nombre     <- 'id_' + ca.nombre,
+      tipo       <- #integer,
+      esPrimaria <- true,
+      esUnico    <- true,
+      esNulo     <- false,
+      rango      <- 0
+    )
+}
+
+-- Incremento 4+5: Atributo → Columna con tipo y esNulo
+rule Atributo2Columna {
+  from
+    a : DC_UML!Atributo
+  to
+    col : ER_2026!Columna (
+      nombre     <- a.nombre,
+      tipo       <- thisModule.tipoToTipoER(a.tipo),
+      esPrimaria <- false,
+      esUnico    <- false,
+      rango      <- a.max,
+      esNulo     <- a.min = 0
+    )
+}
+
+-- Incremento 6: Relacion con max=1 en algún extremo → ClaveAjena
+rule Relacion2ClaveAjena {
+  from
+    r : DC_UML!Relacion (
+      r.finRelacion->exists(fr | fr.max = 1) and
+      r.claseasociacion.oclIsUndefined()
+    )
+  to
+    fk : ER_2026!ClaveAjena (
+      nombre        <- 'FK_' + r.nombre,
+      columnas      <- Sequence { fkCol },
+      referenciadas <- Sequence {
+        r.finRelacion->select(fr | fr.max = 1)->first().clase.resolveTemp('colId')
+      }
+    ),
+    fkCol : ER_2026!Columna (
+      nombre     <- 'id_' + r.finRelacion->select(fr | fr.max = 1)->first().clase.nombre,
+      tipo       <- #integer,
+      esPrimaria <- false,
+      esUnico    <- false,
+      rango      <- 0,
+      esNulo     <- r.finRelacion->select(fr | fr.max <> 1)->first().min = 0
+    )
+}

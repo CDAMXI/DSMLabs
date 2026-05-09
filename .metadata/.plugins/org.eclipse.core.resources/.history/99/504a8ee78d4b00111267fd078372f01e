@@ -23,7 +23,7 @@ lazy rule PKCol {
     nombre     <- 'id_' + c.nombre,
     tipo       <- #integer,
     esPrimaria <- true,
-    esUnico    <- true,
+    esUnico    <- true, 
     esNulo     <- false,
     rango      <- 0
   )
@@ -93,8 +93,9 @@ rule Relacion2ClaveAjena {
   to fk : ER_2026!ClaveAjena (
     nombre        <- 'FK_' + r.nombre,
     columnas      <- Sequence{thisModule.FKCol(r)},
-    referenciadas <- Sequence{thisModule.PKCol(
-  r.finRelacion->select(fr | fr.max = 1)->first().clase
-)}
+    referenciadas <- Sequence{
+      thisModule.resolve(r.finRelacion->select(fr | fr.max = 1)->first().clase)
+        .columnas->select(col | col.esPrimaria)->first()
+    }
   )
 }
